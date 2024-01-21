@@ -70,7 +70,7 @@ public class Sample {
         private final String rootAccountNo;
         private final Account[] accounts;
 
-        private SampleAccount(String sampleName, String rootAccountNo, Account[] accounts) {
+        public SampleAccount(String sampleName, String rootAccountNo, Account[] accounts) {
             this.sampleName = sampleName;
             this.rootAccountNo = rootAccountNo;
             this.accounts = accounts;
