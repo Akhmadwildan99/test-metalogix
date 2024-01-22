@@ -1,6 +1,7 @@
 package metalogix.test.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public class AccountAgg {
     private String accountNo;
@@ -49,4 +50,30 @@ public class AccountAgg {
                 ", childs:" + getChilds() +
                 '}';
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AccountAgg other = (AccountAgg) obj;
+        if (this.balance != other.balance) {
+            return false;
+        }
+        return Objects.equals(this.accountNo, other.accountNo);
+    }
+    
+    
 }
