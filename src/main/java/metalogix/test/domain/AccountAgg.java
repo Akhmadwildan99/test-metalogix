@@ -1,5 +1,7 @@
 package metalogix.test.domain;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +37,15 @@ public class AccountAgg {
     }
 
     public List<AccountAgg> getChilds() {
+
+        if(childs != null) {
+            childs.sort(new Comparator<AccountAgg>() {
+                @Override
+                public int compare(AccountAgg o1, AccountAgg o2) {
+                    return o1.getAccountNo().compareTo(o2.getAccountNo());
+                }
+            });
+        }
         return childs;
     }
 

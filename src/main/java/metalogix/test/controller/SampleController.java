@@ -5,22 +5,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import metalogix.test.domain.Account;
 import metalogix.test.domain.AccountAgg;
 import metalogix.test.domain.Sample;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.net.URISyntaxException;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @Tag(name = "SampleController", description = "the Sample controller Api")
 @RequestMapping("/api")
 public class SampleController {
+    
+    private static  Sample.SampleAccount[] sampleAccounts = Sample.SAMPLE_ACCOUNTS;
+    private static List<Account> accounts  = new ArrayList<>();
     public SampleController() {
     }
 
@@ -188,5 +191,73 @@ public class SampleController {
         }
 
         return  accountAggs;
+    }
+
+
+    @GetMapping("/simple/accounts")
+    public ResponseEntity<List<Account>> getAccountsSimple() {
+
+        return ResponseEntity.ok().body(accounts);
+    }
+
+    @PostMapping("/simple/prepare/accounts")
+    public ResponseEntity<List<Account>> addSimplePrepareAccount() throws URISyntaxException {
+
+
+        Account account = new Account();
+        account.setAccountNo("0000");
+        account.setBalance(0);
+
+        Account account1 = new Account();
+        account1.setAccountNo("0004");
+        account1.setBalance(1);
+
+        accounts.add(account);
+        accounts.add(account1);
+
+        return  ResponseEntity.created(new URI("/api/simple/")).body(accounts);
+    }
+
+    @DeleteMapping("/simple/accounts")
+    public ResponseEntity<List<Account>> deleteSimpleAccounts() {
+
+        accounts = new ArrayList<>();
+
+        return ResponseEntity.ok().body(accounts);
+    }
+
+    @PostMapping("/simple/accounts")
+    public ResponseEntity<List<Account>> addSimpleAccount(@RequestBody Account account) throws URISyntaxException {
+
+
+        if(account.getAccountNo() == null || account.getBalance() == null) {
+            throw new RuntimeException("account and balance must not be null");
+        }
+
+       if(accounts.stream().anyMatch(a -> a.getAccountNo().equals(account.getAccountNo()))) {
+           throw new RuntimeException("account number must unique");
+       }
+
+        accounts.add(account);
+        return  ResponseEntity.created(new URI("/api/simple/accounts")).body(accounts);
+    }
+
+    @DeleteMapping("/simple/accounts/{accountNo}")
+    public ResponseEntity<Object> deleteSimpleAccountByAccountNo(@PathVariable String accountNo) {
+
+        int idx = -1;
+        for (int i = 0; i < accounts.size(); i++) {
+            if(accounts.get(i).getAccountNo().equals(accountNo)) {
+                idx = i;
+            }
+        }
+
+        if(idx == -1) {
+            return  ResponseEntity.badRequest().body("Account not found");
+        }
+
+        accounts.remove(idx);
+
+        return ResponseEntity.ok().body(accounts);
     }
 }
